@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: salon-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5434/salondb
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 5002
