@@ -1,6 +1,6 @@
 package com.canbe.controller;
 
-import com.canbe.model.User;
+import com.canbe.modal.User;
 import com.canbe.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

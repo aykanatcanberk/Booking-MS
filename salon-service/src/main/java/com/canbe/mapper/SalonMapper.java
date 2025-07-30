@@ -1,7 +1,7 @@
 package com.canbe.mapper;
 
 import com.canbe.dto.SalonDto;
-import com.canbe.model.Salon;
+import com.canbe.modal.Salon;
 import org.springframework.stereotype.Component;
 
 @Component

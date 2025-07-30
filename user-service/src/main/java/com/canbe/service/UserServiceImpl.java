@@ -1,9 +1,8 @@
 package com.canbe.service;
 
 import com.canbe.exception.UserNotFoundException;
-import com.canbe.model.User;
+import com.canbe.modal.User;
 import com.canbe.repository.UserRepository;
-import com.canbe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

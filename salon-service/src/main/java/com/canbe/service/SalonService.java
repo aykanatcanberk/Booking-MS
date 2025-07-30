@@ -2,7 +2,7 @@ package com.canbe.service;
 
 import com.canbe.dto.SalonDto;
 import com.canbe.dto.UserDto;
-import com.canbe.model.Salon;
+import com.canbe.modal.Salon;
 
 import java.util.List;
 

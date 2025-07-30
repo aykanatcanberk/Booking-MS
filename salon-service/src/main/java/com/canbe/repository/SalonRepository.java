@@ -1,6 +1,6 @@
 package com.canbe.repository;
 
-import com.canbe.model.Salon;
+import com.canbe.modal.Salon;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

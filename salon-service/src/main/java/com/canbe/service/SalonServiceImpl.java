@@ -3,7 +3,7 @@ package com.canbe.service;
 import com.canbe.dto.SalonDto;
 import com.canbe.dto.UserDto;
 import com.canbe.exception.SalonNotFoundException;
-import com.canbe.model.Salon;
+import com.canbe.modal.Salon;
 import com.canbe.repository.SalonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.canbe.service;
 
-import com.canbe.model.User;
+import com.canbe.modal.User;
 
 import java.util.List;
 

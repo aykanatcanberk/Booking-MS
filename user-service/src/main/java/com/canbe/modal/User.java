@@ -1,4 +1,4 @@
-package com.canbe.model;
+package com.canbe.modal;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
