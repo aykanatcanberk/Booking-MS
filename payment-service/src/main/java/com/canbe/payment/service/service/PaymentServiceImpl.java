@@ -5,10 +5,16 @@ import com.canbe.payment.service.dto.PaymentLinkResponse;
 import com.canbe.payment.service.dto.UserDto;
 import com.canbe.payment.service.modal.PaymentMethod;
 import com.canbe.payment.service.modal.PaymentOrder;
+import com.canbe.payment.service.modal.PaymentOrderStatus;
 import com.canbe.payment.service.repository.PaymentOrderRepository;
+import com.razorpay.Payment;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -31,7 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
     private String razorpayApiKey;
 
     @Override
-    public PaymentLinkResponse createOrder(UserDto user, BookingDto booking, PaymentMethod paymentMethod) throws RazorpayException {
+    public PaymentLinkResponse createOrder(UserDto user, BookingDto booking, PaymentMethod paymentMethod) throws RazorpayException, StripeException {
 
         Long amount = (long) booking.getTotalPrice();
 
@@ -104,7 +110,56 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public String createStripePaymentLink(UserDto user, Long amount, Long orderId) {
-        return "";
+    public String createStripePaymentLink(UserDto user, Long amount, Long orderId) throws StripeException {
+
+        Stripe.apiKey = stripeSecretKey;
+
+        SessionCreateParams params = SessionCreateParams.builder()
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl("http://localhost:3000/payment-success" + orderId)
+                .setCancelUrl("http://localhost:3000/payment-cancel" + orderId)
+                .addLineItem(SessionCreateParams.LineItem.builder()
+                        .setQuantity(1L)
+                        .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
+                                .setCurrency("try")
+                                .setUnitAmount(amount * 100)
+                                .setProductData(SessionCreateParams.LineItem
+                                        .PriceData
+                                        .ProductData
+                                        .builder().setName("salon appointment booking").build()
+                                ).build()
+                        ).build()
+                ).build();
+
+        Session session = Session.create(params);
+
+        return session.getUrl();
+    }
+
+    @Override
+    public Boolean proceedPayment(PaymentOrder paymentOrder, String paymentId, String paymentLinkId) throws RazorpayException, StripeException {
+
+        if (paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING)) {
+            if (paymentOrder.getPaymentMethod().equals(PaymentMethod.RAZORPAY)) {
+                RazorpayClient razorpay = new RazorpayClient(razorpayApiKey, razorpaySecretKey);
+                Payment payment = razorpay.payments.fetch(paymentId);
+                Integer amount = payment.get("amount");
+                String status = payment.get("status");
+
+                if (status.equals("captured")) {
+                    paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
+                    paymentRepository.save(paymentOrder);
+                    return true;
+                }
+
+                return false;
+            } else {
+                paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
+                paymentRepository.save(paymentOrder);
+                return true;
+            }
+        }
+        return false;
     }
 }
